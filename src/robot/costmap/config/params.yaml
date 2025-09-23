@@ -1,4 +1,4 @@
-costmap_node:
+costmap:
   ros__parameters:
     frame_id: "map"
     lidar_topic: "/lidar"

@@ -19,8 +19,14 @@ void CostmapCore::resetGrid() {
 
 //convert polar coordinates to grid coordinates (x,y)
 bool CostmapCore::polarToGrid(double range, double angle, int& grid_x, int& grid_y) const {
-  grid_x = static_cast<int>((range * std::cos(angle) + params_.origin_x) / params_.resolution);
-  grid_y = static_cast<int>((range * std::sin(angle) + params_.origin_y) / params_.resolution);
+  // Compute world coordinates from polar (range, angle)
+  const double world_x = range * std::cos(angle);
+  const double world_y = range * std::sin(angle);
+
+  // Convert world -> grid using origin (bottom-left) and resolution
+  grid_x = static_cast<int>(std::floor((world_x - params_.origin_x) / params_.resolution));
+  grid_y = static_cast<int>(std::floor((world_y - params_.origin_y) / params_.resolution));
+
   return inBounds(grid_x, grid_y);
 }
 
