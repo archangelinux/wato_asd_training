@@ -1,11 +1,10 @@
-#include <chrono>
 #include <memory>
 #include <cmath>
- 
+
 #include "costmap_node.hpp"
- 
+
+// constructor declares all params to be overriden from params.yaml
 CostmapNode::CostmapNode() : Node("costmap"), costmap_(robot::CostmapCore(this->get_logger())) {
-  // Initialize the constructs and their parameters
   this->declare_parameter<std::string>("frame_id", "map");
   this->declare_parameter<std::string>("lidar_topic", "/lidar");
   this->declare_parameter<double>("resolution", 0.1);
@@ -30,30 +29,29 @@ CostmapNode::CostmapNode() : Node("costmap"), costmap_(robot::CostmapCore(this->
   this->get_parameter("inflation_radius", inflation_radius);
   this->get_parameter("max_cost", max_cost);
 
+  // send values to core logic 
   costmap_.configure(robot::CostmapCore::CostmapParams{frame_id, resolution, width, height, origin_x, origin_y, inflation_radius, max_cost});
-  // costmap publisher
+
+  // create the /costmap publisher 
   costmap_pub_ = this->create_publisher<nav_msgs::msg::OccupancyGrid>("/costmap", 10);
-  // lidar subscriber (will implement callback logic later)
+
+  //creates the /lidar subscriber 
   auto qos = rclcpp::SensorDataQoS();
   laser_sub_ = this->create_subscription<sensor_msgs::msg::LaserScan>(
     lidar_topic, qos, std::bind(&CostmapNode::laserCallback, this, std::placeholders::_1));
-
-    //test publisher
-  string_pub_ = this->create_publisher<std_msgs::msg::String>("/test_topic", 10);
-  timer_ = this->create_wall_timer(std::chrono::milliseconds(500), std::bind(&CostmapNode::publishMessage, this));
-}
- 
-// Define the timer to publish a message every 500ms (for test publisher)
-void CostmapNode::publishMessage() {
-  auto message = std_msgs::msg::String();
-  message.data = "Hello, ROS 2!";
-  RCLCPP_INFO(this->get_logger(), "Publishing: '%s'", message.data.c_str());
-  string_pub_->publish(message);
 }
 
-//laser callback to update the costmap
+// // Warmup test publisher (unused):
+// void CostmapNode::publishMessage() {
+//   auto message = std_msgs::msg::String();
+//   message.data = "Hello, ROS 2!";
+//   RCLCPP_INFO(this->get_logger(), "Publishing: '%s'", message.data.c_str());
+//   string_pub_->publish(message);
+// }
+
+// fires every time a laser scan arrives
 void CostmapNode::laserCallback(const sensor_msgs::msg::LaserScan::SharedPtr msg) {
-  //reset -> compute -> inflater ->build grid -> publish
+  //reset -> compute -> inflate -> build grid -> publish
   costmap_.resetGrid();
   for (size_t i = 0; i < msg->ranges.size(); ++i) {
     float r = msg->ranges[i];
