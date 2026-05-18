@@ -1,3 +1,5 @@
-# control_node:
-#   ros__parameters:
-    
+control_node:
+  ros__parameters:
+    lookahead_distance: 1.0   # metres ahead on the path to target
+    linear_speed: 1.5         # constant forward speed (m/s)
+    goal_tolerance: 0.5       # metres — stop when this close to path end

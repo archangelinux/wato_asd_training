@@ -1,6 +1,6 @@
-costmap:
+costmap_node:
   ros__parameters:
-    frame_id: "map"
+    frame_id: "robot/chassis/lidar"
     lidar_topic: "/lidar"
     resolution: 0.1
     width: 200
