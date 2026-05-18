@@ -1,3 +1,4 @@
-# planner_node:
-#   ros__parameters:
-    
+planner_node:
+  ros__parameters:
+    goal_tolerance: 0.5       # metres — considered arrived when within this distance of the goal
+    obstacle_threshold: 50    # cells with cost >= this are treated as obstacles by A*
