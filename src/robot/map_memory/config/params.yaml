@@ -1,3 +1,8 @@
-# map_memory_node:
-#   ros__parameters:
-    
+map_memory_node:
+  ros__parameters:
+    distance_threshold: 1.5 #meters left before updating the distance
+    resolution: 0.1 #same as costmap
+    width: 1000 # 1000 x 1000 global map
+    height: 1000
+    origin_x: -50.0 #bottom left corner in world coordinates
+    origin_y: -50.0
